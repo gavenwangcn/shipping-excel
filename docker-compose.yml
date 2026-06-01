@@ -1,9 +1,9 @@
 services:
-  backend:
+  ship-excel-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: shipping-excel-backend
+    container_name: ship-excel-backend
     restart: unless-stopped
     ports:
       - "8099:8099"
@@ -20,16 +20,16 @@ services:
       retries: 3
       start_period: 10s
 
-  frontend:
+  ship-excel-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: shipping-excel-frontend
+    container_name: ship-excel-frontend
     restart: unless-stopped
     ports:
       - "30088:80"
     depends_on:
-      backend:
+      ship-excel-backend:
         condition: service_healthy
 
 volumes:
