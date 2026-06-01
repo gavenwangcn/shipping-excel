@@ -130,6 +130,37 @@ func TestRealTemplateGenerate3926300000(t *testing.T) {
 	assertCellFloat(t, f, inv, "G"+strconv.Itoa(freightRow), sumQ)
 	assertCellFloat(t, f, inv, "G"+strconv.Itoa(insRow), sumR)
 	assertCellFloat(t, f, inv, "G"+strconv.Itoa(totalRow), sumQ+sumR+sumG)
+
+	// 模板头部应保留
+	title, _ := f.GetCellValue(inv, "A3")
+	if !strings.Contains(title, "COMMERCIAL INVOICE") {
+		t.Fatalf("INVOICE 模板头部丢失: %q", title)
+	}
+	i13, _ := f.GetCellValue(inv, "I13")
+	if i13 != hs {
+		t.Fatalf("INVOICE I13 HS CODE 错误: %q", i13)
+	}
+
+	// PL 表数据区与汇总
+	pl := SheetPL
+	plTitle, _ := f.GetCellValue(pl, "A3")
+	if !strings.Contains(plTitle, "Packing List") {
+		t.Fatalf("PL 模板头部丢失: %q", plTitle)
+	}
+	b13, _ := f.GetCellValue(pl, "B13")
+	if b13 != filtered[0].PartNo {
+		t.Fatalf("PL B13 错误: %q", b13)
+	}
+	plTotalRow := PLDataRow + xx
+	aPlTotal, _ := f.GetCellValue(pl, "A"+strconv.Itoa(plTotalRow))
+	if !strings.Contains(strings.ToUpper(aPlTotal), "TOTAL") {
+		t.Fatalf("PL TOTAL 行位置错误: row=%d val=%q", plTotalRow, aPlTotal)
+	}
+
+	zipPath := filepath.Join(outDir, "test.zip")
+	if err := CreateZipFromDir(outDir, zipPath); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestRealTemplateGenerateAllHSCodes(t *testing.T) {

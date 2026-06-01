@@ -44,7 +44,7 @@
               <h2>下载报关 Excel 压缩包</h2>
               <p class="download-meta">
                 {{ job.zip_file_name }} · 共 {{ job.file_count || files.length }} 个文件
-                <span v-if="job.output_batch"> · 批次 {{ job.output_batch }}</span>
+                <span v-if="job.output_batch_name"> · 批次 {{ job.output_batch_name }}</span>
               </p>
             </div>
           </div>
@@ -54,10 +54,10 @@
         </div>
       </div>
 
-      <!-- 生成文件列表（预览） -->
+      <!-- 生成文件列表 -->
       <div v-if="files.length" class="card files-card">
         <div class="section-header">
-          <h2>文件清单 ({{ files.length }})</h2>
+          <h2>文件明细 ({{ files.length }})</h2>
         </div>
         <div class="table-wrap">
           <table>
@@ -67,6 +67,7 @@
                 <th>HS CODE</th>
                 <th>CI NO.</th>
                 <th>数据行数</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +76,11 @@
                 <td><code>{{ f.hs_code }}</code></td>
                 <td>{{ f.ci_no }}</td>
                 <td>{{ f.row_count }}</td>
+                <td>
+                  <a :href="downloadUrl(f.id)" class="btn btn-primary btn-sm" download>
+                    下载
+                  </a>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -127,7 +133,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { getJob, getJobFiles, getJobData, downloadZipUrl } from '../api'
+import { getJob, getJobFiles, getJobData, downloadFileUrl, downloadZipUrl } from '../api'
 import StatusBadge from '../components/StatusBadge.vue'
 
 const props = defineProps({ id: String })
@@ -147,6 +153,10 @@ const progressPercent = computed(() => {
 })
 
 const zipDownloadUrl = computed(() => downloadZipUrl(props.id))
+
+function downloadUrl(fileId) {
+  return downloadFileUrl(props.id, fileId)
+}
 
 async function fetchJob() {
   try {
@@ -334,19 +344,10 @@ onUnmounted(stopPoll)
 }
 
 .download-btn {
-  padding: 12px 28px;
+  min-width: 140px;
+  padding: 12px 24px;
   font-size: 15px;
   white-space: nowrap;
-}
-
-@media (max-width: 640px) {
-  .download-inner {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .download-btn {
-    width: 100%;
-  }
 }
 
 .section-header {

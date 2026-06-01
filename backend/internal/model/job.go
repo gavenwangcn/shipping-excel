@@ -16,23 +16,23 @@ const (
 )
 
 type Job struct {
-	ID           string         `gorm:"primaryKey" json:"id"`
-	Status       JobStatus      `gorm:"index" json:"status"`
-	Progress     int            `json:"progress"`
-	Total        int            `json:"total"`
-	CurrentHS    string         `json:"current_hs"`
-	Message      string         `json:"message"`
-	ErrorMsg     string         `json:"error_msg,omitempty"`
-	SourcePath   string         `json:"-"`
-	TemplatePath string         `json:"-"`
-	OutputDir    string         `json:"-"`
-	OutputBatch  string         `json:"output_batch,omitempty"`
-	ZipPath      string         `json:"-"`
-	ZipFileName  string         `json:"zip_file_name,omitempty"`
-	FileCount    int            `json:"file_count"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	ID              string         `gorm:"primaryKey" json:"id"`
+	Status          JobStatus      `gorm:"index" json:"status"`
+	Progress        int            `json:"progress"`
+	Total           int            `json:"total"`
+	CurrentHS       string         `json:"current_hs"`
+	Message         string         `json:"message"`
+	ErrorMsg        string         `json:"error_msg,omitempty"`
+	SourcePath      string         `json:"-"`
+	TemplatePath    string         `json:"-"`
+	OutputDir       string         `json:"-"`
+	OutputBatchName string         `json:"output_batch_name,omitempty"`
+	ZipPath         string         `json:"-"`
+	ZipFileName     string         `json:"zip_file_name,omitempty"`
+	FileCount       int            `json:"file_count"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 type OutputFile struct {

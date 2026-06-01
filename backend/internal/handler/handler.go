@@ -123,9 +123,8 @@ func (h *Handler) DownloadZip(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.Header("Content-Type", "application/zip")
 	c.Header("Content-Disposition", "attachment; filename=\""+name+"\"")
+	c.Header("Content-Type", "application/zip")
 	c.File(path)
 }
 
