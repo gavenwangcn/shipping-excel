@@ -14,7 +14,7 @@ import (
 
 func main() {
 	dataDir := envOr("DATA_DIR", "./data")
-	port := envOr("PORT", "8080")
+	port := envOr("PORT", "8099")
 
 	database, err := db.Init(dataDir)
 	if err != nil {

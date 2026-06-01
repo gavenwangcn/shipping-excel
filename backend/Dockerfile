@@ -22,7 +22,7 @@ COPY --from=builder /server /app/server
 RUN mkdir -p /app/data
 
 ENV DATA_DIR=/app/data
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=8099
+EXPOSE 8099
 
 CMD ["/app/server"]
