@@ -120,7 +120,7 @@ func GenerateFromTemplateBytes(templateData []byte, outputDir, hsCode string, ro
 	}
 
 	ciNo := sanitizeFileName(rows[0].CINo)
-	fileName := fmt.Sprintf("%s%s.xlsx", ciNo, hsCode)
+	fileName := fmt.Sprintf("%s%s.xlsm", ciNo, hsCode)
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return nil, err
 	}
@@ -149,8 +149,14 @@ func GenerateFromTemplateBytes(templateData []byte, outputDir, hsCode string, ro
 		return nil, fmt.Errorf("关闭工作簿失败: %w", err)
 	}
 
+	raw := buf.Bytes()
+	fixed, err := repairOOXMLPackage(raw)
+	if err != nil {
+		return nil, fmt.Errorf("修复 Excel 包结构失败: %w", err)
+	}
+
 	_ = os.Remove(outPath)
-	if err := writeFileWithRetry(outPath, buf.Bytes()); err != nil {
+	if err := writeFileWithRetry(outPath, fixed); err != nil {
 		return nil, fmt.Errorf("保存文件失败: %w", err)
 	}
 

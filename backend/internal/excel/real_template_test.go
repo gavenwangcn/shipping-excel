@@ -70,7 +70,7 @@ func TestRealTemplateGenerate3926300000(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wantName := "43115-DT1EJ20250101-A" + hs + ".xlsx"
+	wantName := "43115-DT1EJ20250101-A" + hs + ".xlsm"
 	if result.FileName != wantName {
 		t.Fatalf("文件名期望 %s，实际 %s", wantName, result.FileName)
 	}

@@ -192,11 +192,14 @@ function changePage(p) {
   fetchData()
 }
 
+async function refreshAll() {
+  await fetchJob()
+  await fetchFiles()
+  await fetchData()
+}
+
 function startPoll() {
-  pollTimer = setInterval(async () => {
-    await fetchJob()
-    await fetchFiles()
-  }, 1500)
+  pollTimer = setInterval(refreshAll, 1500)
 }
 
 function stopPoll() {
@@ -208,7 +211,7 @@ function stopPoll() {
 
 onMounted(async () => {
   loading.value = true
-  await Promise.all([fetchJob(), fetchFiles(), fetchData()])
+  await refreshAll()
   loading.value = false
   if (job.value && (job.value.status === 'pending' || job.value.status === 'processing')) {
     startPoll()

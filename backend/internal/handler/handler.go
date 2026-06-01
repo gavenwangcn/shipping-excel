@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"shipping-excel/backend/internal/logx"
 	"shipping-excel/backend/internal/service"
 )
 
@@ -18,6 +19,7 @@ func New(jobs *service.JobService) *Handler {
 }
 
 func (h *Handler) Register(r *gin.Engine) {
+	r.Use(h.requestLogger())
 	api := r.Group("/api")
 	{
 		api.POST("/upload", h.Upload)
@@ -31,6 +33,13 @@ func (h *Handler) Register(r *gin.Engine) {
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
+}
+
+func (h *Handler) requestLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		logx.HTTP(c.Request.Method, c.Request.URL.Path, c.Writer.Status(), c.Errors.String())
+	}
 }
 
 func (h *Handler) Upload(c *gin.Context) {
@@ -61,9 +70,12 @@ func (h *Handler) Upload(c *gin.Context) {
 
 	job, err := h.jobs.CreateJob(srcFile, tplFile, source.Filename, template.Filename)
 	if err != nil {
+		logx.Warnf("upload rejected: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	logx.Jobf(job.ID, "upload accepted source=%q template=%q", source.Filename, template.Filename)
 
 	c.JSON(http.StatusOK, gin.H{
 		"id":      job.ID,
@@ -109,9 +121,12 @@ func (h *Handler) DownloadFile(c *gin.Context) {
 
 	path, name, err := h.jobs.GetOutputFilePath(jobID, uint(fileID))
 	if err != nil {
+		logx.Warnf("download file job=%s file_id=%d failed: %v", jobID, fileID, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+
+	logx.Infof("download file job=%s file_id=%d name=%q path=%q", jobID, fileID, name, path)
 
 	c.Header("Content-Disposition", "attachment; filename=\""+name+"\"")
 	c.File(path)
@@ -140,6 +155,7 @@ func (h *Handler) ListData(c *gin.Context) {
 
 	rows, total, err := h.jobs.ListDataRows(c.Param("id"), page, pageSize)
 	if err != nil {
+		logx.Errorf("list_data job=%s failed: %v", c.Param("id"), err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
