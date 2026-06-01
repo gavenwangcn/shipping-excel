@@ -1,0 +1,25 @@
+# 真实模板文件（用于测试校验，部署时由用户上传）
+# ATP海运模板小程序.xlsm 保留在仓库根目录
+
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+backend/server
+backend/*.exe
+
+# Data
+data/
+*.db
+backend/testdata/real-output/
+backend/testdata/real-test-output/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
